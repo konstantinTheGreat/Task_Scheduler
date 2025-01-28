@@ -1,32 +1,47 @@
-package org.java5thsem;
+package org.java5thsem.repository;
 
+import org.java5thsem.entity.ScheduledTask;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class Repo {
+public class TaskRepo {
 
-    private List<Task> tasks;
+    private static TaskRepo instance;
+    private List<ScheduledTask> tasks;
 
-    public Repo(List<Task> tasks) {
-        this.tasks = tasks;
+    public TaskRepo() {
+        tasks = new ArrayList<>();
     }
 
-    public void addTask(Task task) {
+    public static TaskRepo getInstance() {
+        if (instance == null) {
+            instance = new TaskRepo();
+        }
+        return instance;
+    }
+
+    public void addTask(ScheduledTask task) {
         tasks.add(task);
     }
 
-    public void removeTask(Task task) {
+    public void removeTask(ScheduledTask task) {
         tasks.remove(task);
     }
 
-    public List<Task> getTasks() {
+    public List<ScheduledTask> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(List<ScheduledTask> tasks) {
         this.tasks = tasks;
     }
 
-    public Task getTask(int index) {
+    public ScheduledTask getTask(int index) {
         return tasks.get(index);
+    }
+
+    public void removeAllTasks() {
+        tasks.clear();
     }
 }

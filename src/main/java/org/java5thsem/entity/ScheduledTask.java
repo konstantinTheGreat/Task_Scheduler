@@ -1,14 +1,14 @@
-package org.java5thsem;
+package org.java5thsem.entity;
 
 public class ScheduledTask   {
     private static int nextId = 1;
     private int id;
-    private String time;
+    private int time;
     private Methods method;
     private int firstVar;
     private int secondVar;
 
-    public ScheduledTask(String time, Methods method, int firstVar, int secondVar) {
+    public ScheduledTask(int time, Methods method, int firstVar, int secondVar) {
         this.id = nextId++;
         this.time = time;
         this.method = method;
@@ -16,7 +16,7 @@ public class ScheduledTask   {
         this.secondVar = secondVar;
     }
 
-    public String getTime() {
+    public int getTime() {
         return time;
     }
 
