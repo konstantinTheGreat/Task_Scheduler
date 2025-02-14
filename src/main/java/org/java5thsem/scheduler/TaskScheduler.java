@@ -1,72 +1,41 @@
 package org.java5thsem.scheduler;
 
-import org.java5thsem.entity.CompletedTask;
 import org.java5thsem.entity.ScheduledTask;
+import org.java5thsem.entity.CompletedTask;
 import org.java5thsem.repository.CompletedTasksRepo;
-import org.java5thsem.repository.TaskRepo;
+import org.java5thsem.thread.TaskExecutorCallable;
+import org.java5thsem.thread.TaskExecutorThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import static org.java5thsem.constant.Constants.*;
+import java.util.concurrent.TimeUnit;
 
 public class TaskScheduler implements Task {
     private static final Logger logger = LoggerFactory.getLogger(TaskScheduler.class);
-    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
-    private TaskRepo taskRepo = TaskRepo.getInstance();
-    private CompletedTasksRepo completedTasksRepo = CompletedTasksRepo.getInstance();
+    private final CompletedTasksRepo completedTasksRepo = CompletedTasksRepo.getInstance();
 
     public void scheduleTask(ScheduledTask task) {
         long delayInSeconds = Math.max(task.getTime(), 0);
-
         logger.info(SCHEDULE_WITH_DELAY, task.getId(), delayInSeconds);
 
-        executorService.schedule(() -> completeTask(task), delayInSeconds, TimeUnit.SECONDS);
-    }
+        new Thread(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(delayInSeconds);
 
-    @Override
-    public void completeTask(ScheduledTask task) {
-        try {
-            logger.info(EXECUTE_TASK_ID, task.getId(), task.getMethod());
+                TaskExecutorThread taskThread = new TaskExecutorThread(new TaskExecutorCallable(task));
+                taskThread.start();
+                taskThread.join();
 
-            int result;
-            switch (task.getMethod()) {
-                case ADD:
-                    result = task.getFirstVar() + task.getSecondVar();
-                    break;
-                case SUBTRACT:
-                    result = task.getFirstVar() - task.getSecondVar();
-                    break;
-                case MULTIPLY:
-                    result = task.getFirstVar() * task.getSecondVar();
-                    break;
-                case DIVIDE:
-                    if (task.getSecondVar() != 0) {
-                        result = task.getFirstVar() / task.getSecondVar();
-                    } else {
-                        logger.warn(DIVISION_BY_ZERO, task.getId());
-                        return;
-                    }
-                    break;
-                default:
-                    logger.warn(UNKNOWN_OPERATION, task.getId());
-                    return;
+                CompletedTask completedTask = taskThread.getResult();
+                if (completedTask != null) {
+                    completedTasksRepo.addTask(completedTask);
+                    logger.info(STORED_COMPLETED_TASK, completedTask);
+                }
+
+            } catch (Exception e) {
+                logger.error(ERROR_RETRIEVING_TASK, e);
             }
-
-            CompletedTask completedTask = new CompletedTask(task.getId(), result, task.getMethod());
-            completedTasksRepo.addTask(completedTask);
-            logger.info(TASK_COMPLETED, task.getId(), completedTask);
-
-        } catch (Exception e) {
-            logger.error(ERROR_EXECUTING_TASK, task.getId(), e.getMessage(), e);
-        }
-    }
-
-    public void shutdown() {
-        logger.info(SHUTTING_DOWN);
-        executorService.shutdown();
+        }).start();
     }
 }

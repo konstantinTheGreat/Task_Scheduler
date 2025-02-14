@@ -13,14 +13,14 @@ public class Constants {
     public static final String SCHEDULE_WITH_DELAY = "Scheduling task ID {} with a delay of {} seconds.";
     public static final String INVALID_INDEX = "Invalid task index: {}";
 
-    public static final String EXECUTE_TASK_ID = "Executing task ID {} of type {}";
+    public static final String EXECUTE_TASK_ID = "Executing task ID: {}";
 
-    public static final String DIVISION_BY_ZERO = "Task ID {}: Division by zero is not allowed.";
+    public static final String DIVISION_BY_ZERO = "Task ID: {} - Division by zero!";
 
     public static final String UNKNOWN_OPERATION = "Task ID {}: Unknown operation.";
     public static final String TASK_COMPLETED = "Task ID {} completed successfully: {}";
 
-    public static final String ERROR_EXECUTING_TASK = "Error executing task ID {}: {}";
+    public static final String ERROR_EXECUTING_TASK = "Error executing task ID: {}";
     public static final String SHUTTING_DOWN = "Shutting down task scheduler...";
 
 
@@ -32,4 +32,9 @@ public class Constants {
     public static final String TASK_UPDATED = "Task list updated. New size: {}";
     public static final String TASK_ID_RETRIEVED = "Retrieved Task ID {} at index {}.";
     public static final String ALL_TASKS_REMOVED = "All tasks have been removed from repository.";
+
+    public static final int TEN = 10;
+
+    public static final String STORED_COMPLETED_TASK = "Stored completed task: {}";
+    public static final String ERROR_RETRIEVING_TASK = "Error retrieving task result";
 }
